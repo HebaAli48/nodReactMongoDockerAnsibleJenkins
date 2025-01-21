@@ -1,0 +1,25 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m`
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Pull Docker images
+      shell: |
+        docker pull <your_dockerhub_username>/backend:latest
+        docker pull <your_dockerhub_username>/frontend:latest
+
+    - name: Start Docker containers
+      shell: |
+        docker-compose -f /path/to/docker-compose.yml up -d
+      args:
+        chdir: /root/project

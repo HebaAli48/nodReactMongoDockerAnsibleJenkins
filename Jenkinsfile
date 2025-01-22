@@ -23,20 +23,24 @@ pipeline {
                 input message: 'The build was successful. Do you want to proceed with the deployment?', ok: 'Proceed'
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to DigitalOcean droplet...'
-                sshagent(['digitalocean-ssh-key']) {
-                    sh '''
-                    # Ensure Ansible is installed and configured
-                    ansible --version
-                    
-                    # Run Ansible playbook for deployment
-                    ansible-playbook -i inventory.ini playbook.yml
-                    '''
-                }
+      stage('Deploy') {
+             steps {
+               echo 'Deploying to DigitalOcean droplet...'
+               sshagent(['digitalocean-ssh-key']) {
+               sh '''
+               # Ensure Ansible is installed and configured
+               ansible --version
+            
+              # Add the host's SSH key to known_hosts
+              ssh-keyscan -H 164.92.166.224 >> ~/.ssh/known_hosts
+            
+              # Run Ansible playbook for deployment
+              ansible-playbook -i inventory.ini playbook.yml
+              '''
+        }
             }
         }
+
     }
     post {
         always {

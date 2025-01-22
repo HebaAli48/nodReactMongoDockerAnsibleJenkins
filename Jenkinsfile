@@ -28,6 +28,9 @@ pipeline {
                 echo 'Deploying to DigitalOcean droplet...'
                 sshagent(['digitalocean-ssh-key']) {
                     sh '''
+                    # Ensure Ansible is installed and configured
+                    ansible --version
+                    
                     # Run Ansible playbook for deployment
                     ansible-playbook -i inventory.ini playbook.yml
                     '''
@@ -38,6 +41,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
+            // Uncomment the next line if you want to stop and remove Docker containers after the pipeline finishes
             // sh 'docker-compose -f docker-compose.yml down'
         }
     }

@@ -29,11 +29,12 @@ pipeline {
                sh '''
                # Ensure Ansible is installed and configured
                ansible --version
-        
+            
+              # Add the host's SSH key to known_hosts
+            
               # Run Ansible playbook for deployment
               ansible-playbook -i inventory.ini playbook.yml
               '''
-        }
             }
         }
 

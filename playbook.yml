@@ -1,4 +1,4 @@
-- hosts: host1
+- hosts: all
   become: yes
   tasks:
     - name: Install Docker

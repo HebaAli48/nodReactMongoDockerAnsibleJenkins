@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                sh 'docker-compose -f docker-compose.yml build'
+                sh 'docker-compose up -d --build'
             }
         }
         stage('Test') {
@@ -12,31 +12,24 @@ pipeline {
                 echo 'Testing the application...'
                 sh '''
                 # Run your backend and frontend tests here
-                docker-compose -f docker-compose.yml run backend npm test
-                docker-compose -f docker-compose.yml run frontend npm test
+                docker logs mongo
+                docker logs backend
+                docker logs frontend
                 '''
             }
         }
-        // stage('Push Docker Images') {
-        //     steps {
-        //         echo 'Pushing Docker images to Docker Hub...'
-        //         sh '''
-        //         docker login -u <your_dockerhub_username> -p <your_dockerhub_password>
-        //         docker tag backend <your_dockerhub_username>/backend:latest
-        //         docker tag frontend <your_dockerhub_username>/frontend:latest
-        //         docker push <your_dockerhub_username>/backend:latest
-        //         docker push <your_dockerhub_username>/frontend:latest
-        //         '''
-        //     }
-        // }
+        stage('Manual Approval') {
+            steps {
+                input message: 'The build was successful. Do you want to proceed with the deployment?', ok: 'Proceed'
+            }
+        }
         stage('Deploy') {
             steps {
                 echo 'Deploying to DigitalOcean droplet...'
                 sshagent(['digitalocean-ssh-key']) {
                     sh '''
-                    # Clone the repository on the droplet and use Ansible for deployment
-                    ssh -o StrictHostKeyChecking=no root@<droplet_ip> "git clone https://github.com/your-repo/project.git || (cd project && git pull)"
-                    ansible-playbook -i <droplet_ip>, playbook.yml
+                    # Run Ansible playbook for deployment
+                    ansible-playbook -i inventory.ini playbook.yml
                     '''
                 }
             }
@@ -45,7 +38,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            sh 'docker-compose -f docker-compose.yml down'
+            // sh 'docker-compose -f docker-compose.yml down'
         }
     }
 }

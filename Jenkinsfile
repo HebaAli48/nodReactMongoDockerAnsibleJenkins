@@ -5,9 +5,9 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'dockerhub-credentials'
         SSH_CREDENTIALS = 'digitalocean-ssh-key'
         DROPLET_IP = '164.92.166.224'
-        BACKEND_IMAGE = 'hebaali4/backend-app'
-        FRONTEND_IMAGE = 'hebaali4/frontend-app'
-        MONGO_IMAGE = 'hebaali4/mongo-app'
+        BACKEND_IMAGE = 'hebaali4/backend'
+        FRONTEND_IMAGE = 'hebaali4/frontend'
+        MONGO_IMAGE = 'hebaali4/mmongo'
     }
     
     stages {

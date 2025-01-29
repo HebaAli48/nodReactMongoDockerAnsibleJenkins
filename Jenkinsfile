@@ -22,6 +22,8 @@ pipeline {
             steps {
                 echo 'Building the application...'
                 sh 'docker-compose up -d --build'
+                sh 'docker images'  // This will list all locally available Docker images for you to check
+
             }
         }
 

@@ -84,23 +84,37 @@ pipeline {
         }
 
         stage('Deploy to Droplet') {
-            steps {
-                script {
-                    sshagent([SSH_CREDENTIALS]) {
-                        sh '''
-                        ssh -o StrictHostKeyChecking=no root@${DROPLET_IP} '
-                            docker pull hebaali4/backend:latest
-                            docker pull hebaali4/frontend:latest
-                            docker pull hebaali4/mongo:latest
-                            cd /root/web-java-devops
-                            docker-compose down
-                            docker-compose up -d
-                        '
-                        '''
-                    }
+        steps {
+            script {
+                sshagent([SSH_CREDENTIALS]) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no root@${DROPLET_IP} '
+                        # Install Docker Compose if not already installed
+                        if ! command -v docker-compose &> /dev/null; then
+                            echo "Docker Compose not found. Installing..."
+                            sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                            sudo chmod +x /usr/local/bin/docker-compose
+                        fi
+                        
+                        # Login to Docker Hub (replace with actual Docker Hub credentials)
+                        echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                        
+                        # Pull latest images
+                        docker pull hebaali4/backend:latest
+                        docker pull hebaali4/frontend:latest
+                        docker pull hebaali4/mongo:latest
+                        
+                        # Change to the application directory and manage Docker containers
+                        cd /root/web-java-devops || exit 1
+                        docker-compose down
+                        docker-compose up -d
+                    '
+                    '''
                 }
             }
         }
+}
+
     }
     
     post {

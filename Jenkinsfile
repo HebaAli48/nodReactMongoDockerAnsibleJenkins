@@ -61,7 +61,7 @@ pipeline {
                         sh '''
                         echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
                         
-                        // Tag and push the backend, frontend, and mongo images to Docker Hub
+                        # Tag and push the backend, frontend, and mongo images to Docker Hub
                         docker tag ${BACKEND_IMAGE}:latest ${BACKEND_IMAGE}:latest
                         docker tag ${FRONTEND_IMAGE}:latest ${FRONTEND_IMAGE}:latest
                         docker tag ${MONGO_IMAGE}:latest ${MONGO_IMAGE}:latest
@@ -74,6 +74,7 @@ pipeline {
                 }
             }
         }
+
       
         stage('Manual Deployment Approval') {
             steps {

@@ -5,9 +5,9 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'dockerhub-credentials'
         SSH_CREDENTIALS = 'digitalocean-ssh-key'
         DROPLET_IP = '164.92.166.224'
-        BACKEND_IMAGE = 'hebaali4/backend'
-        FRONTEND_IMAGE = 'hebaali4/frontend'
-        MONGO_IMAGE = 'hebaali4/mmongo'
+        BACKEND_IMAGE = 'nodreactmongodockeransiblejenkins-backend'
+        FRONTEND_IMAGE = 'nodreactmongodockeransiblejenkins-frontend'
+        MONGO_IMAGE = 'mongo'
     }
     
     stages {
@@ -23,7 +23,6 @@ pipeline {
                 echo 'Building the application...'
                 sh 'docker-compose up -d --build'
                 sh 'docker images'  // This will list all locally available Docker images for you to check
-
             }
         }
 
@@ -63,24 +62,24 @@ pipeline {
                         sh '''
                         echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
                         
-                        # Tag and push the backend, frontend, and mongo images to Docker Hub
-                        docker tag ${BACKEND_IMAGE}:latest ${BACKEND_IMAGE}:latest
-                        docker tag ${FRONTEND_IMAGE}:latest ${FRONTEND_IMAGE}:latest
-                        docker tag ${MONGO_IMAGE}:latest ${MONGO_IMAGE}:latest
+                        # Tag the images with the correct names
+                        docker tag ${BACKEND_IMAGE}:latest hebaali4/backend:latest
+                        docker tag ${FRONTEND_IMAGE}:latest hebaali4/frontend:latest
+                        docker tag ${MONGO_IMAGE}:latest hebaali4/mongo:latest
 
-                        docker push ${BACKEND_IMAGE}:latest
-                        docker push ${FRONTEND_IMAGE}:latest
-                        docker push ${MONGO_IMAGE}:latest
+                        # Push the tagged images to Docker Hub
+                        docker push hebaali4/backend:latest
+                        docker push hebaali4/frontend:latest
+                        docker push hebaali4/mongo:latest
                         '''
                     }
                 }
             }
         }
 
-      
         stage('Manual Deployment Approval') {
             steps {
-                input message: 'The build was successful. Do you want to proceed with the deployment?', ok: 'Proceed'
+                input message: 'The images have been pushed to DockerHub. Do you want to proceed with the deployment?', ok: 'Proceed'
             }
         }
 
@@ -90,9 +89,9 @@ pipeline {
                     sshagent([SSH_CREDENTIALS]) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no root@${DROPLET_IP} '
-                            docker pull ${BACKEND_IMAGE}:latest
-                            docker pull ${FRONTEND_IMAGE}:latest
-                            docker pull ${MONGO_IMAGE}:latest
+                            docker pull hebaali4/backend:latest
+                            docker pull hebaali4/frontend:latest
+                            docker pull hebaali4/mongo:latest
                             cd /root/web-java-devops
                             docker-compose down
                             docker-compose up -d
@@ -107,7 +106,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            sh 'docker-compose down'
+            sh 'docker-compose down'  // This cleans up any running containers
         }
     }
 }

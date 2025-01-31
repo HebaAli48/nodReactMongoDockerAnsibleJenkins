@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json()); // Middleware to parse JSON data
 
 // Environment Variables
-const mongoURI = 'mongodb://mongo:27017/mydb';
+const mongoURI = 'mongodb://164.92.166.224:27017/mydb';
 
 // MongoDB Connection
 mongoose

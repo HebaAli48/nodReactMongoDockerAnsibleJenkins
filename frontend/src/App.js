@@ -13,7 +13,7 @@ function App() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/users')
+    fetch('http://164.92.166.224:5000/users')
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error('Error fetching users:', err));
@@ -21,7 +21,7 @@ function App() {
 
   const handleAddUser = async (newUser) => {
     try {
-      const response = await fetch('http://localhost:5000/users', {
+      const response = await fetch('http://164.92.166.224:5000/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
@@ -35,7 +35,7 @@ function App() {
 
   const handleEditUser = async (updatedUser) => {
     try {
-      const response = await fetch(`http://localhost:5000/users/${updatedUser._id}`, {
+      const response = await fetch(`http://164.92.166.224:5000/users/${updatedUser._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedUser),
@@ -51,7 +51,7 @@ function App() {
 
   const handleDeleteUser = async () => {
     try {
-      await fetch(`http://localhost:5000/users/${selectedUser._id}`, {
+      await fetch(`http://164.92.166.224:5000/users/${selectedUser._id}`, {
         method: 'DELETE',
       });
       setUsers(users.filter((user) => user._id !== selectedUser._id));

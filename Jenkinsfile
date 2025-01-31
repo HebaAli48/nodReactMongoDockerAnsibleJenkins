@@ -103,10 +103,8 @@ pipeline {
                         docker pull hebaali4/backend:latest
                         docker pull hebaali4/frontend:latest
                         docker pull hebaali4/mongo:latest
-                        docker run -d --name mongo  hebaali4/mongo:latest
-                        docker run -d --name backend hebaali4/backend:latest
-                        docker run -d --name frontend hebaali4/frontend:latest
-
+                        # Start services using docker-compose
+                        docker-compose up -d
                        
                     '
                     '''

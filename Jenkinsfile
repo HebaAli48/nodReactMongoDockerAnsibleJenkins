@@ -103,11 +103,11 @@ pipeline {
                         docker pull hebaali4/backend:latest
                         docker pull hebaali4/frontend:latest
                         docker pull hebaali4/mongo:latest
-                        
-                        # Change to the application directory and manage Docker containers
-                        cd /root/web-java-devops || exit 1
-                        docker-compose down
-                        docker-compose up -d
+                        docker run -d --name mongo  hebaali4/mongo:latest
+                        docker run -d --name backend hebaali4/backend:latest
+                        docker run -d --name frontend hebaali4/frontend:latest
+
+                       
                     '
                     '''
                 }

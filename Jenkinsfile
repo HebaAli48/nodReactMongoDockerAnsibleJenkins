@@ -104,7 +104,7 @@ pipeline {
                         docker pull hebaali4/frontend:latest
                         docker pull hebaali4/mongo:latest
                         # Mongo
-                        docker run -d --name mongo -p 27017:27017 hebaali4/mongo:latest
+                        docker run -d --name mongo -p 27017:27017 -v mongo_data:/data/db hebaali4/mongo:latest
 
                         # Backend
                         docker run -d --name backend -p 5000:5000 --link mongo hebaali4/backend:latest
@@ -123,7 +123,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            sh 'docker-compose down'  // This cleans up any running containers
+            sh 'docker-compose down --remove-orphans'  
         }
     }
 }
